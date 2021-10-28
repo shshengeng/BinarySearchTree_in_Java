@@ -1,0 +1,191 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
+/**
+ * BinarySearchTree
+ * Fields: Vertex root, int value
+ * Constructor: BinarySearchTree() with no parameter
+ * Methods:There are actually 4 methods, insert value, remove value,
+ * search a specific value and get a height of a BST.
+ */
+public class BinarySearchTree {
+    Vertex root;
+    int value;
+    static ArrayList<Integer> arrayList = new ArrayList<>();
+
+    /**
+     * This is a Constructor that initializes a BST to empty BST
+     */
+    public BinarySearchTree(){
+        root = null;
+        value = 0;
+    }
+
+    /**
+     * This method insert a value to a BST
+     * param: value  The value that we want to insert
+     */
+    public void insertValue(int value){
+        if(root==null){
+            root = new Vertex(value);
+        }else{
+            Vertex current = root;
+            Boolean done = false;  //declaring a Boolean variable
+            while(!done){
+                if(current.value >= value){ //value belongs on the left side
+                    if(current.lchild == null){  //the new vertex needs to be the left child of current
+                        current.lchild = new Vertex(value);
+                        done = true;
+                    }else{ //keep going down the tree
+                        current = current.lchild;
+                    }
+                }else{ //value belongs on the right side
+                    if(current.rchild == null){ //the new vertex needs to be the right child of current
+                        current.rchild = new Vertex(value);
+                        done = true;
+                    }else{ //keep going down the tree
+                        current = current.rchild;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This method remove a value in a BST
+     * param: value The value that you want to remove
+     */
+    public void removeValue(int value){
+        root = recDelete(root,value);
+    }
+
+    /**
+     * This method actually delete a value in BST and invoked by method removeValue()
+     * param: current a vertex
+     * param: value the value you want to delete
+     * return
+     */
+    public Vertex recDelete(Vertex current, int value){
+        if (current == null){
+            return current;
+        }else if(current.value < value){
+            current.rchild = recDelete(current.rchild,value);
+            return current;
+        }else if (current.value > value){
+            current.lchild = recDelete(current.lchild,value);
+            return current;
+        }else{
+            if(current.lchild == null){
+                return current.rchild;
+            }else if(current.rchild == null){
+                return current.lchild;
+            }else{
+                Vertex tmp = fixLeftSubtree(current);
+                tmp.rchild = current.rchild;
+                return tmp;
+            }
+        }
+    }
+
+    /**
+     * This method recognize that the largest value in the left subtree,
+     * and is invoked by method recDelete()
+     * param: vertex a vertex
+     * return: Vertex
+     */
+    public Vertex fixLeftSubtree(Vertex vertex){
+        Vertex temp = vertex.lchild;
+        if (temp.rchild == null){
+            return temp;
+        }else {
+            Vertex parent = null;
+            Vertex current = temp;
+            while (current.rchild != null){
+                parent = current;
+                current = current.rchild;
+            }
+            parent.rchild = current.lchild;
+            current.lchild = temp;
+            return current;
+        }
+    }
+
+    /**
+     *This method search a value that in a BST
+     * param: value  The value you want to search in a BST
+     * return: Vertex It returns the Vertex of the value that you want to search
+     */
+    public Vertex searchValue(int value){
+        Vertex current = root;
+        while(current != null){
+            if(current.value == value){
+                return current;
+            }else if(current.value > value){
+                current = current.lchild;
+            }else{
+                current = current.rchild;
+            }
+        }
+        return null; //value is not in the set
+    }
+
+    /**
+     * This method return height of a BST
+     * return: height of a BST
+     */
+    public int height(){
+        return computeHeight(root) - 1;
+    }
+
+    /**
+     * This method is invoked by method height(),
+     * and it computes the height of a BST
+     * param: root the root of a BST
+     * return: height of a BST including root
+     */
+    public int computeHeight(Vertex root){
+        if (root == null){
+            return 0;
+        }else {
+            return Math.max(computeHeight(root.lchild),computeHeight(root.rchild))+1;
+        }
+    }
+
+    public void inOrderSearch(Vertex root){
+        if(root == null){
+            return;
+        }
+        inOrderSearch(root.lchild);
+        System.out.println(root.value);
+        inOrderSearch(root.rchild);
+
+    }
+}
+
+/**
+ * Vertex class includes three fields: Vertex lchild, Vertex rchild, and int value
+ * Constructor: Vertex(int value) which need a integer parameter
+ * Method: I overwrite toString method that help me to test.
+ */
+class Vertex{
+    Vertex lchild;
+    Vertex rchild;
+    int value;
+
+    /**
+     * This is a constructor that initialize the value of Vertex
+     * param: value
+     */
+    public Vertex(int value){
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "Vertex{" +
+                "lchild=" + lchild +
+                ", rchild=" + rchild +
+                ", value=" + value +
+                '}';
+    }
+}
